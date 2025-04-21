@@ -140,19 +140,28 @@ function Create() {
                 <div>
                     <label htmlFor="dueDate" className="block text-sm font-medium mb-1">Due Date</label>
                     <Controller
-                        name="dueDate"
-                        control={control}
-                        rules={{ required: 'Due date is required' }}
-                        render={({ field }) => (
-                            <input
-                                {...field}
-                                type="date"
-                                id="dueDate"
-                                className={`w-full p-2 border rounded-md ${errors.dueDate ? 'border-red-500' : ''}`}
-                            />
-                        )}
-                    />
-                    {errors.dueDate && <p className="text-red-500 text-sm mt-1">{errors.dueDate.message}</p>}
+  name="dueDate"
+  control={control}
+  rules={{
+    required: 'Due date is required',
+    validate: value => {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      return selectedDate >= today || 'Due date cannot be in the past';
+    }
+  }}
+  render={({ field }) => (
+    <input
+      {...field}
+      type="date"
+      id="dueDate"
+      className={`w-full p-2 border rounded-md ${errors.dueDate ? 'border-red-500' : ''}`}
+    />
+  )}
+/>
+{errors.dueDate && <p className="text-red-500 text-sm mt-1">{errors.dueDate.message}</p>}
+
                 </div>
 
                 <div className="flex space-x-4 pt-4">

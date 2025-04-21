@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/store";
 import { deleteTaskReducer, allTaskReducer } from "@/app/store/actions/task.action";
+import { formatDate } from "@/app/utlis/common";
 
 type AppTableProps<T extends Record<string, any>> = {
     tableHeader: string[];
@@ -20,13 +21,13 @@ function AppTable<T extends Record<string, any>>({
     const [localData, setLocalData] = useState(tableData);
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
-    
+
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 5;
-    
+
     const [filterText, setFilterText] = useState("");
     const [filterColumn, setFilterColumn] = useState("all");
-    
+
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -55,9 +56,9 @@ function AppTable<T extends Record<string, any>>({
     const filteredData = useMemo(() => {
         return localData.filter(row => {
             if (filterText === "") return true;
-            
+
             if (filterColumn === "all") {
-                return Object.values(row).some(value => 
+                return Object.values(row).some(value =>
                     String(value).toLowerCase().includes(filterText.toLowerCase())
                 );
             } else {
@@ -69,13 +70,13 @@ function AppTable<T extends Record<string, any>>({
 
     const sortedData = useMemo(() => {
         if (!sortColumn) return filteredData;
-        
+
         return [...filteredData].sort((a, b) => {
             const aValue = a[sortColumn];
             const bValue = b[sortColumn];
-            
+
             if (aValue === bValue) return 0;
-            
+
             const comparison = aValue < bValue ? -1 : 1;
             return sortDirection === "asc" ? comparison : -comparison;
         });
@@ -85,7 +86,7 @@ function AppTable<T extends Record<string, any>>({
         const startIndex = (currentPage - 1) * rowsPerPage;
         return sortedData.slice(startIndex, startIndex + rowsPerPage);
     }, [sortedData, currentPage]);
-
+console.log({paginatedData})
     const totalPages = Math.ceil(sortedData.length / rowsPerPage);
 
     const handleSort = (column: string) => {
@@ -110,7 +111,7 @@ function AppTable<T extends Record<string, any>>({
         }
     };
 
-    const visibleHeaders = tableHeader.filter(header => 
+    const visibleHeaders = tableHeader.filter(header =>
         header.toLowerCase() !== 'id'
     );
 
@@ -138,12 +139,12 @@ function AppTable<T extends Record<string, any>>({
                         ))}
                     </select>
                 </div>
-                
+
                 <div className="ml-auto text-sm text-gray-500">
                     Showing {paginatedData.length} of {sortedData.length} tasks
                 </div>
             </div>
-            
+
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                     <tr>
@@ -151,8 +152,8 @@ function AppTable<T extends Record<string, any>>({
                             #
                         </th>
                         {visibleHeaders.map((header, index) => (
-                            <th 
-                                scope="col" 
+                            <th
+                                scope="col"
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                 key={index}
                                 onClick={() => handleSort(header.toLowerCase())}
@@ -178,10 +179,18 @@ function AppTable<T extends Record<string, any>>({
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                             </td>
-                            
+
                             {Object.entries(row).map(([key, value], index) => {
                                 if (key === 'id') return null;
-                                
+
+                                if (key === 'DueDate') {
+                                    return (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" key={index}>
+                                            {formatDate(value)}
+                                        </td>
+                                    );
+                                }
+
                                 if (key.toLowerCase() === 'status') {
                                     return (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm" key={index}>
@@ -191,14 +200,15 @@ function AppTable<T extends Record<string, any>>({
                                         </td>
                                     );
                                 }
-                                
+
                                 return (
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" key={index}>
                                         {String(value)}
                                     </td>
                                 );
                             })}
-                            
+
+
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div className="flex space-x-2">
                                     <button
@@ -225,7 +235,7 @@ function AppTable<T extends Record<string, any>>({
                     ))}
                 </tbody>
             </table>
-            
+
             {totalPages > 1 && (
                 <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
                     <div className="flex-1 flex justify-between sm:hidden">
@@ -272,7 +282,7 @@ function AppTable<T extends Record<string, any>>({
                                     <span className="sr-only">Previous</span>
                                     <span>‹</span>
                                 </button>
-                                
+
                                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                     let pageNum;
                                     if (totalPages <= 5) {
@@ -284,22 +294,21 @@ function AppTable<T extends Record<string, any>>({
                                     } else {
                                         pageNum = currentPage - 2 + i;
                                     }
-                                    
+
                                     return (
                                         <button
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
-                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                                currentPage === pageNum
+                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pageNum
                                                     ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                                                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                            }`}
+                                                }`}
                                         >
                                             {pageNum}
                                         </button>
                                     );
                                 })}
-                                
+
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}

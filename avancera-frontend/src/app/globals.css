@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ededed;
+    --foreground: #0a0a0a;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  @apply antialiased leading-relaxed;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--primary);
+  @apply font-bold tracking-tight;
+}
+
+h1 {
+  @apply text-4xl md:text-5xl mb-4;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl mb-3;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl mb-2;
+}
+
+/* Paragraphs */
+p {
+  @apply text-base md:text-lg text-foreground mb-4;
+}
+
+/* Links */
+a {
+  color: var(--secondary);
+  text-decoration: underline;
+}

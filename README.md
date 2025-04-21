@@ -38,12 +38,12 @@ A full-stack task management application built with **Next.js** on the frontend 
 
 ### 📦 Backend (Express + MySQL)
 
-cd backend
-npm i
-npm start
+- cd backend
+- npm i
+- npm start
 
 ### 📦 Frontend (Next.js)
 
-cd frontend 
-npm i 
-npm run dev
+- cd frontend 
+- npm i 
+- npm run dev
